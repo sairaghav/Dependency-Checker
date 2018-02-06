@@ -88,11 +88,7 @@ def findHeaderFiles(root_dir,headers=[]):
 
     for header in headers:
         head = header.replace('/','\\').lower().strip()
-        actual_header = head
-
-        if '..\\' in head:
-            index = -(head.count('..\\')+1)
-            actual_header = head.replace('..\\','')
+        actual_header = head.replace('..\\','')
 
         for filename in allFiles:
             if filename.endswith('\\'+actual_header):
