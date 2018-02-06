@@ -16,6 +16,11 @@ def getDependentHeaderFiles(root_dir):
     global allFiles
     headers = []
 
+    try:
+        len(allFiles)
+    except:
+        getAllFiles(root_dir)
+
     for filename in allFiles:
         if filename.endswith('.c') or  filename.endswith('.cpp') or filename.endswith('.h') or filename.endswith('.hpp'):
             with open(filename,'r') as f:
@@ -42,15 +47,34 @@ def getDependentHeaderFiles(root_dir):
     return set(headers)
 
 
-def copyHeaderFile(srcpath,outpath):
-    try:
-        os.makedirs('\\'.join(outpath.split('\\')[:-1]))
-    except:
-        pass
-    subprocess.Popen(['copy', srcpath, outpath], shell=True)
+def copyHeaderFiles(headers=[],out_dir=''):
+    if headers == []:
+        headers = getDependentHeaderFiles(root_dir)
+
+    if out_dir == '':
+        out_dir = os.getcwd()
+
+    for header in headers:
+        head = header.replace('/','\\').lower().strip()
+        prefix = out_dir
+        actual_header = head
+
+        if '..\\' in head:
+            index = -(head.count('..\\')+1)
+            prefix = '\\'.join(out_dir.split('\\')[:index])
+            actual_header = head.replace('..\\','')
+
+        outpath = prefix +'\\'+ actual_header
+
+    for filename in allFiles:  
+        try:
+            os.makedirs('\\'.join(outpath.split('\\')[:-1]))
+        except:
+            pass
+        subprocess.Popen(['copy', srcpath, outpath], shell=True)
 
 
-def findHeaderFiles(root_dir,headers=[],out_dir=''):
+def findHeaderFiles(root_dir,headers=[]):
     global allFiles
     foundHeaders = []
     
@@ -64,25 +88,16 @@ def findHeaderFiles(root_dir,headers=[],out_dir=''):
 
     for header in headers:
         head = header.replace('/','\\').lower().strip()
-        prefix = out_dir
         actual_header = head
 
         if '..\\' in head:
             index = -(head.count('..\\')+1)
-            prefix = '\\'.join(out_dir.split('\\')[:index])
             actual_header = head.replace('..\\','')
 
         for filename in allFiles:
-            try:
-                if filename.endswith('\\'+actual_header):
-                    if not out_dir == '':
-                        outpath = prefix +'\\'+ actual_header
-                        copyHeaderFile(filename,outpath)
-                    foundHeaders.append(header)
-                    break
-                
-            except:
-                pass
+            if filename.endswith('\\'+actual_header):
+                foundHeaders.append(header)
+                break
 
     return set(foundHeaders)
 
