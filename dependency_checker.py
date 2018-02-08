@@ -1,5 +1,5 @@
 import os
-import subprocess
+from shutil import copyfile
 
 def getAllFiles(root_dir):
     global allFiles
@@ -47,7 +47,7 @@ def getDependentHeaderFiles(root_dir):
     return set(headers)
 
 
-def copyHeaderFiles(headers=[],out_dir=''):
+def copyHeaderFiles(root_dir,headers=[],out_dir=''):
     if headers == []:
         headers = getDependentHeaderFiles(root_dir)
 
@@ -66,12 +66,13 @@ def copyHeaderFiles(headers=[],out_dir=''):
 
         outpath = prefix +'\\'+ actual_header
 
-    for filename in allFiles:  
-        try:
-            os.makedirs('\\'.join(outpath.split('\\')[:-1]))
-        except:
-            pass
-        subprocess.Popen(['copy', srcpath, outpath], shell=True)
+    for filename in allFiles:
+        if filename.endswith('\\'+actual_header):
+            try:
+                os.makedirs('\\'.join(outpath.split('\\')[:-1]))
+            except:
+                pass
+            copyfile(filename,outpath)
 
 
 def findHeaderFiles(root_dir,headers=[]):
