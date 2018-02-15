@@ -66,13 +66,13 @@ def copyHeaderFiles(root_dir,headers=[],out_dir=''):
 
         outpath = prefix +'\\'+ actual_header
 
-    for filename in allFiles:
-        if filename.endswith('\\'+actual_header):
-            try:
-                os.makedirs('\\'.join(outpath.split('\\')[:-1]))
-            except:
-                pass
-            copyfile(filename,outpath)
+        for filename in allFiles:
+            if filename.endswith('\\'+actual_header):
+                try:
+                    os.makedirs('\\'.join(outpath.split('\\')[:-1]))
+                except:
+                    pass
+                copyfile(filename,outpath)
 
 
 def findHeaderFiles(root_dir,headers=[]):
