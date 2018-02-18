@@ -54,22 +54,27 @@ def copyHeaderFiles(root_dir,headers=[],out_dir=''):
     if out_dir == '':
         out_dir = os.getcwd()
 
+    if os.name == 'nt':
+        path_separator = '\\'
+    else:
+        path_separator = '/'
+
     for header in headers:
-        head = header.replace('/','\\').lower().strip()
+        head = header.replace('/',path_separator).strip()
         prefix = out_dir
         actual_header = head
 
-        if '..\\' in head:
-            index = -(head.count('..\\')+1)
-            prefix = '\\'.join(out_dir.split('\\')[:index])
-            actual_header = head.replace('..\\','')
+        if '..'+path_separator in head:
+            index = -(head.count('..'+path_separator)+1)
+            prefix = path_separator.join(out_dir.split(path_separator)[:index])
+            actual_header = head.replace('..'+path_separator,'')
 
-        outpath = prefix +'\\'+ actual_header
+        outpath = prefix +''+path_separator+''+ actual_header
 
         for filename in allFiles:
-            if filename.endswith('\\'+actual_header):
+            if filename.endswith(path_separator+''+actual_header):
                 try:
-                    os.makedirs('\\'.join(outpath.split('\\')[:-1]))
+                    os.makedirs(path_separator.join(outpath.split(path_separator)[:-1]))
                 except:
                     pass
                 copyfile(filename,outpath)
@@ -87,12 +92,17 @@ def findHeaderFiles(root_dir,headers=[]):
     except:
         getAllFiles(root_dir)
 
+    if os.name == 'nt':
+        path_separator = '\\'
+    else:
+        path_separator = '/'
+
     for header in headers:
-        head = header.replace('/','\\').lower().strip()
-        actual_header = head.replace('..\\','')
+        head = header.replace('/',path_separator).strip()
+        actual_header = head.replace('..'+path_separator,'')
 
         for filename in allFiles:
-            if filename.endswith('\\'+actual_header):
+            if filename.endswith(path_separator+''+actual_header):
                 foundHeaders.append(header)
                 break
 
